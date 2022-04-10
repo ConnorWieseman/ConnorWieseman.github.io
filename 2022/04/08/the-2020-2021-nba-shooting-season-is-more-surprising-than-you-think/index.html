@@ -22,11 +22,6 @@
 
 
 
-
-<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
-
-
-
 <link rel="stylesheet" href="/css/fonts.css" media="all">
 <link rel="stylesheet" href="/css/main.css" media="all">
 
@@ -62,7 +57,7 @@
 
   <article class="article">
     
-    <span class="article-duration">8 min read</span>
+    <span class="article-duration">3 min read</span>
     
 
     <h1 class="article-title">The 2020 - 2021 NBA shooting season is more surprising than you think</h1>
@@ -83,244 +78,28 @@ If a team is good at shooting, they will be able to win a lot of games.</p>
 <p>The Bucks were ranked 9th out of 16 teams in the playoffs, shooting a field goal percentage of 46.2%. Compared to the number 1 team in the playoffs, the Philadelphia who had a shooting percentage of 47.5%.</p>
 <p>So, how were the Bucks able to win the NBA Finals?</p>
 <p>Defense.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.5     ✓ purrr   0.3.4
-## ✓ tibble  3.1.6     ✓ dplyr   1.0.8
-## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
-## ✓ readr   2.0.1     ✓ forcats 0.5.1</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(scales)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;scales&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     discard</code></pre>
-<pre><code>## The following object is masked from &#39;package:readr&#39;:
-## 
-##     col_factor</code></pre>
-<pre class="r"><code>library(waffle)
-library(ggrepel)
-library(gt)
-library(ggalt)</code></pre>
-<pre><code>## Registered S3 methods overwritten by &#39;ggalt&#39;:
-##   method                  from   
-##   grid.draw.absoluteGrob  ggplot2
-##   grobHeight.absoluteGrob ggplot2
-##   grobWidth.absoluteGrob  ggplot2
-##   grobX.absoluteGrob      ggplot2
-##   grobY.absoluteGrob      ggplot2</code></pre>
-<pre class="r"><code>nbareg &lt;- read_csv(&quot;NBA 2020-2021 Regular Season Stats - Sheet1 (1).csv&quot;)</code></pre>
-<pre><code>## Rows: 31 Columns: 25
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (1): Team
-## dbl (24): Rk, G, MP, FG, FGA, FG%, 3P, 3PA, 3P%, 2P, 2PA, 2P%, FT, FTA, FT%,...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>nbaplayoffs &lt;- read_csv(&quot;NBA 2020-2021 Playoff Season - Sheet1 (1).csv&quot;)</code></pre>
-<pre><code>## Rows: 17 Columns: 25
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (1): Team
-## dbl (24): Rk, G, MP, FG, FGA, FG%, 3P, 3PA, 3P%, 2P, 2PA, 2P%, FT, FTA, FT%,...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>nbateamshooting &lt;- read_csv(&quot;teamshootingstats1.csv&quot;)</code></pre>
-<pre><code>## New names:
-## Rows: 31 Columns: 35
-## ── Column specification
-## ──────────────────────────────────────────────────────── Delimiter: &quot;,&quot; chr
-## (1): Team dbl (27): Rk, G, MP, FG%, Dist., 2P...8, 0-3...9, 3-10...10,
-## 10-16...11, 16-... lgl (7): ...7, ...14, ...21, ...24, ...27, ...30, ...33
-## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
-## Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## • `` -&gt; `...7`
-## • `2P` -&gt; `2P...8`
-## • `0-3` -&gt; `0-3...9`
-## • `3-10` -&gt; `3-10...10`
-## • `10-16` -&gt; `10-16...11`
-## • `16-3P` -&gt; `16-3P...12`
-## • `3P` -&gt; `3P...13`
-## • `` -&gt; `...14`
-## • `2P` -&gt; `2P...15`
-## • `0-3` -&gt; `0-3...16`
-## • `3-10` -&gt; `3-10...17`
-## • `10-16` -&gt; `10-16...18`
-## • `16-3P` -&gt; `16-3P...19`
-## • `3P` -&gt; `3P...20`
-## • `` -&gt; `...21`
-## • `2P` -&gt; `2P...22`
-## • `3P` -&gt; `3P...23`
-## • `` -&gt; `...24`
-## • `%FGA` -&gt; `%FGA...25`
-## • `Md.` -&gt; `Md....26`
-## • `` -&gt; `...27`
-## • `%FGA` -&gt; `%FGA...28`
-## • `Md.` -&gt; `Md....29`
-## • `` -&gt; `...30`
-## • `` -&gt; `...33`
-## • `Md.` -&gt; `Md....35`</code></pre>
-<pre class="r"><code>nbateamratings &lt;- read_csv(&quot;teamratings2021.csv&quot;)</code></pre>
-<pre><code>## Rows: 30 Columns: 15
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (3): Team, Conf, Div
-## dbl (12): Rk, W, L, W/L%, MOV, ORtg, DRtg, NRtg, MOV/A, ORtg/A, DRtg/A, NRtg/A
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <p>The CSV files contain statistics from the NBA 2020-2021 Regular Season, playoffs, team shooting stats, and overall team offensive and defensive ratings.</p>
 <p>Lets look at this in reverse order by looking at the playoffs first.</p>
 <p>Most of the top five shooting teams in the playoffs (Utah and Brooklyn were tied for 5th) seem to all make it past the first round.</p>
-<pre class="r"><code> top5fg_percent_playoffs &lt;- nbaplayoffs %&gt;% 
-  select(Team,`FG%`) %&gt;%
-  arrange(desc(`FG%`)) %&gt;% 
-  top_n(5)</code></pre>
-<pre><code>## Selecting by FG%</code></pre>
-<pre class="r"><code>portland &lt;- top5fg_percent_playoffs %&gt;% 
-  filter(Team == &quot;Portland Trail Blazers&quot;)</code></pre>
 <p>The Phoenix Suns, the second best shooting team, made their run to the NBA Finals beating the third best shooting team, the Los Angeles Clippers, in the Western Conference Finals.</p>
-<p>The result of the NBA Finals was not in favor of the Suns, but instead, the Bucks.</p>
-<pre class="r"><code>ggplot() + 
-  geom_bar(data=top5fg_percent_playoffs, aes(x=reorder(Team, `FG%`), weight=`FG%`)) + 
-  geom_bar(data= portland, aes(x=reorder(Team, `FG%`), weight=`FG%`), fill=&quot;#CD1041&quot;) +
-  scale_y_continuous(labels=comma) + 
-  coord_flip() +
-  labs(title=&quot;The NBA Champions aren&#39;t in this conversation&quot;, subtitle = &quot;Portland didn&#39;t even make it pass the first round.&quot;, x= &quot;Team&quot;, y= &quot;Field Goal Percentage&quot;, caption=&quot;Source: Basketball-Reference | By Connor Wieseman&quot;) + 
-  theme_minimal() + 
-  theme( 
-  plot.title = element_text(size=12.5, face = &quot;bold&quot;), 
-  plot.title.position = &quot;plot&quot;,
-  axis.title = element_text(size = 10),
-  plot.subtitle = element_text(size = 11),
-  axis.text.x = element_text(size = 6),
-  panel.grid.minor = element_blank())</code></pre>
-<p><img src="/2022/04/08/the-2020-2021-nba-shooting-season-is-more-surprising-than-you-think/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<p>The result of the NBA Finals was not in favor of the Suns, but instead, the Bucks.
+<img src="/2022/04/08/the-2020-2021-nba-shooting-season-is-more-surprising-than-you-think/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
 Now lets take a look at the regular season.</p>
 <p>Good shooting teams are usually good enough to make to the playoffs, as the top five regular season teams all qualified to move on to the playoffs.</p>
 <p>Only two teams remained within the top five best in shooting in both the regular season and playoffs.Those teams were the Phoenix Suns and Los Angeles Clippers.</p>
-<pre class="r"><code>top5fg_percent_reg &lt;- nbareg %&gt;%
-  select(Team,`FG%`) %&gt;%
-  arrange(desc(`FG%`)) %&gt;% 
-  top_n(5)</code></pre>
-<pre><code>## Selecting by FG%</code></pre>
-<pre class="r"><code>nets &lt;- top5fg_percent_reg %&gt;% 
-  filter(Team == &quot;Brooklyn Nets&quot;)
-suns &lt;- top5fg_percent_reg %&gt;% 
-  filter(Team == &quot;Phoenix Suns&quot;)</code></pre>
-<pre class="r"><code>ggplot() + 
-   geom_bar(data=top5fg_percent_reg, aes(x=reorder(Team, `FG%`), weight=`FG%`)) +
-   geom_bar(data=nets, aes(x=reorder(Team, `FG%`),weight=`FG%`), fill = &quot;#CD1041&quot;) +
-   geom_bar(data=suns, aes(x=reorder(Team, `FG%`), weight = `FG%`), fill = &quot;#1D1160&quot;) +
-  scale_y_continuous(labels=comma) + 
-  coord_flip() +
-  labs(title=&quot;Brooklyn was .006% away from making half their field goals&quot;, subtitle = &quot;Brooklyn and Phoenix are the only teams to shoot over 48%.&quot;, x= &quot;Team&quot;, y= &quot;Field Goal Percentage&quot;, caption=&quot;Source: Basketball-Reference | By Connor Wieseman&quot;) + 
-  theme_minimal() + 
-  theme( 
-  plot.title = element_text(size=12, face = &quot;bold&quot;),
-  plot.title.position = &quot;plot&quot;,
-  axis.title = element_text(size = 10),
-  plot.subtitle = element_text(size = 11),
-  axis.text.x = element_text(size = 7),
-  panel.grid.minor = element_blank())</code></pre>
 <p><img src="/2022/04/08/the-2020-2021-nba-shooting-season-is-more-surprising-than-you-think/index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
 Field goal percentage is calculated by field goals made divided by field goals attempted. In other words, shots made divided by shots taken.</p>
 <p>At the end of a season, teams have a statistic of the average of how many field goals are attempted and made per game.</p>
 <p>There are teams in the NBA that attempt more shots than others, and teams that make more shots than others.</p>
-<pre class="r"><code>nbateamsshooting_reg &lt;- nbareg 
-bucks &lt;- nbateamsshooting_reg %&gt;% 
-  filter(Team == &quot;Milwaukee Bucks&quot;) 
-magic &lt;- nbateamsshooting_reg %&gt;% 
-  filter(Team == &quot;Orlando Magic&quot;) </code></pre>
-<pre class="r"><code>ggplot() +
-  geom_point(data=nbateamsshooting_reg, aes(x=`FGA`, y=`FG`)) + 
-  geom_point(data=bucks, aes(x=`FGA`, y=`FG`), color=&quot;red&quot;) + 
-  geom_point(data=magic, aes(x=`FGA`, y=`FG`), color=&quot;red&quot;) +
-  geom_text_repel(data=bucks, aes(x=`FGA`, y=`FG`, label=Team)) +
-  geom_text_repel(data=magic, aes(x=`FGA`, y=`FG`, label=Team)) +
-  geom_smooth(data=nbateamsshooting_reg, aes(x=`FGA`, y=`FG`), method=&quot;lm&quot;) + 
-  labs(title=&quot;18 Teams shot up to standard&quot;, subtitle = &quot;No such thing as Magic in Orlando.&quot;, x= &quot;FGA&quot;, y= &quot;FG&quot;, caption=&quot;Source: Basketball-Reference | By Connor Wieseman&quot;) + 
-  theme_minimal() + 
-  theme(
-  plot.title = element_text(size=12, face = &quot;bold&quot;),
-  plot.title.position = &quot;plot&quot;,
-  axis.title = element_text(size = 10),
-  plot.subtitle = element_text(size = 11),
-  axis.text.x = element_text(size = 7),
-  panel.grid.minor = element_blank())</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <p><img src="/2022/04/08/the-2020-2021-nba-shooting-season-is-more-surprising-than-you-think/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>In the playoffs there will be less teams to play.</p>
 <p>If you ever heard the phrase, “Offense wins games, defense wins championships”, the playoffs is where that phrase comes in.</p>
-<pre class="r"><code>nbateamshooting_playoffs &lt;- nbaplayoffs 
-grizzlies &lt;- nbateamshooting_playoffs %&gt;% 
-  filter(Team == &quot;Memphis Grizzlies&quot;) 
-lakers &lt;- nbateamshooting_playoffs %&gt;% 
-  filter(Team == &quot;Los Angeles Lakers&quot;)
-bucks &lt;-  nbateamshooting_playoffs %&gt;% 
-  filter(Team == &quot;Milwaukee Bucks&quot;)</code></pre>
-<pre class="r"><code>ggplot() +
-  geom_point(data=nbateamshooting_playoffs, aes(x=`FGA`, y=`FG`)) + 
-  geom_point(data=grizzlies, aes(x=`FGA`, y=`FG`), color=&quot;red&quot;) + 
-  geom_point(data=lakers, aes(x=`FGA`, y=`FG`), color=&quot;red&quot;) + 
-  geom_point(data=bucks, aes(x=`FGA`, y=`FG`), color=&quot;red&quot;) + 
-  geom_text_repel(data=grizzlies, aes(x=`FGA`, y=`FG`, label=Team)) + 
-  geom_text_repel(data=lakers, aes(x=`FGA`, y=`FG`, label=Team)) + 
-  geom_text_repel(data=bucks, aes(x=`FGA`, y=`FG`, label=Team)) + 
-  geom_smooth(data=nbateamshooting_playoffs, aes(x=`FGA`, y=`FG`), method=&quot;lm&quot;) + 
-  labs(title=&quot;The Grizzlies were the best shooting team in the playoffs \nOnly to get eliminated in the 1st round&quot;, subtitle = &quot;LeBron can&#39;t carry.&quot;, x= &quot;FGA&quot;, y= &quot;FG&quot;, caption=&quot;Source: Basketball-Reference | By Connor Wieseman&quot;) + 
-  theme_minimal() + 
-  theme(
-  plot.title = element_text(size=12, face = &quot;bold&quot;),
-  plot.title.position = &quot;plot&quot;,
-  axis.title = element_text(size = 10),
-  plot.subtitle = element_text(size = 11),
-  axis.text.x = element_text(size = 7),
-  panel.grid.minor = element_blank())</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <p><img src="/2022/04/08/the-2020-2021-nba-shooting-season-is-more-surprising-than-you-think/index_files/figure-html/unnamed-chunk-12-1.png" width="672" />
 The Bucks and Suns are opposites. The Suns were known for their offense, lead by NBA veteran Chris Paul and Devin Booker. As for the Bucks, they have always had a great defense, with Giannis Antetokounmpo, Jrue Holiday, and Khris Middleton.</p>
-<pre class="r"><code>bucks_rating &lt;- nbateamratings %&gt;%
-  filter(Team == &quot;Milwaukee Bucks&quot;) %&gt;% 
-  select(DRtg, ORtg)
-suns_off &lt;- nbateamratings %&gt;% 
-  filter(Team == &quot;Phoenix Suns&quot;) %&gt;% 
-  select(DRtg, ORtg) %&gt;%
-  summarise(mean(ORtg))
-suns_def &lt;- nbateamratings %&gt;% 
-  filter(Team == &quot;Phoenix Suns&quot;) %&gt;% 
-  select(DRtg, ORtg) %&gt;%
-  summarise(mean(DRtg))</code></pre>
-<pre class="r"><code>bucks_rating &lt;- c(&quot;Defense Rating&quot;=112.03 , &quot;Offense Rating&quot;=117.68,0)
-suns_rating&lt;- c(&quot;Defense Rating&quot;=112.14, &quot;Offense Rating&quot;=118.01,0.44)</code></pre>
-<pre class="r"><code>iron( 
-  waffle( 
-    bucks_rating/2,
-    rows = 5, 
-    colors = c(&quot;#00471B&quot;, &quot;#EEE1C6&quot;, &quot;white&quot;)) + 
-    labs(title=&quot;Tight ratings equals a tight NBA Finals&quot;, subtitle = &quot;With the Suns barely having better ratings, they weren&#39;t able to capitalize the title.&quot;) +
-  theme(
-   plot.title = element_text(size=12, face = &quot;bold&quot;),
-   plot.title.position = &quot;plot&quot;, 
-   axis.title = element_text(size=10),
-   axis.title.y = element_blank()
-  ), 
-  waffle( 
-    suns_rating/2,
-    rows = 5,
-    xlab = &quot;1 square = 2 Rating&quot;, 
-    colors = c(&quot;#E56020&quot;, &quot;#1D1160&quot;, &quot;white&quot;)) + 
-    labs(caption = &quot;Source: Basketball-Reference | By Connor Wieseman&quot;)
-)</code></pre>
 <p><img src="/2022/04/08/the-2020-2021-nba-shooting-season-is-more-surprising-than-you-think/index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
 With the Suns having slightly better ratings and starting off the NBA Finals with a
 2-0 series lead, the Bucks were able to remain calm, as they were able to win the next four games and bring the Larry O’Brien Championship Trophy back to Milwaukee after fifty years.</p>
-<p>The code for this post is <a href="">here</a>.</p>
+<p>The code for this post is <a href="https://github.com/ConnorWieseman/Notebooks/blob/main/Project%201.Rmd">here</a>.</p>
 
     </div>
   </article>
@@ -344,22 +123,7 @@ With the Suns having slightly better ratings and starting off the NBA Finals wit
     </div>
     
 
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
-
-
-
     
-<script src="/js/math-code.js"></script>
-<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
 
     
   </body>
